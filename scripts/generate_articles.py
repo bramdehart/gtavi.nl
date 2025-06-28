@@ -25,9 +25,9 @@ def extract_text_from_url(url: str) -> str:
         try:
             page.wait_for_selector("button:has-text(\"Accept\")", timeout=5000)
             page.click("button:has-text(\"Accept\")")
-            logger.info("✅ Cookie banner accepted")
+            logger.info("✅ Google cookie banner accepted")
         except PlaywrightTimeout:
-            logger.info("ℹ️ No cookie button found")
+            logger.info("ℹ️ No Google cookie button found")
 
         # Try to wait for main content
         try:
@@ -217,7 +217,7 @@ def fetch_latest_gta_news():
     for entry in sorted(feed.entries, key=lambda e: datetime(*e.published_parsed[:6]), reverse=True):
         if hasattr(entry, "link") and hasattr(entry, "published"):
             if hasattr(entry, "source") and hasattr(entry.source, "href"):
-                if entry.source.href in ["https://www.gamekings.tv", "https://metro.co.uk"]:
+                if entry.source.href in ["https://www.gamekings.tv", "https://metro.co.uk", "https://timesofindia.indiatimes.com"]:
                     continue
             news_items.append({
                 "title": entry.title,
