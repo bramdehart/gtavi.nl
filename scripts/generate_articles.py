@@ -281,17 +281,31 @@ def extract_text_from_url(url: str) -> str:
             driver.get(url)
 
             try:
-                # Click on the "Accept all" button if it's visible (cookie blocker)
+                # Click on the "Accept all" button if it's visible (Google cookie blocker)
                 accept_btn = WebDriverWait(driver, 3).until(
-                    EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Accept all') or contains(., 'Akkoord')]"))
+                    EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Accept all') or contains(., 'Akkoord') or contains(., 'Accept')]"))
                 )
                 accept_btn.click()
-                logger.debug("✅ Cookie wall accepted")
+                logger.debug("✅ Google cookie wall accepted")
             except Exception:
-                logger.debug("ℹ️ No cookie wall or button not found")
+                logger.debug("ℹ️ No Google cookie wall or button not found")
             
             # Wait for the article content to load (adjust timeout as needed)
             wait = WebDriverWait(driver, 10)
+
+            try:
+                # Click on the "Accept all" button if it's visible (Article cookie blocker)
+                accept_btn = WebDriverWait(driver, 3).until(
+                    EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Accept all') or contains(., 'Akkoord') or contains(., 'Accept')]"))
+                )
+                accept_btn.click()
+                logger.debug("✅ Article cookie wall accepted")
+            except Exception:
+                logger.debug("ℹ️ No Article cookie wall or button not found")
+
+            # Wait for the article content to load (adjust timeout as needed)
+            wait = WebDriverWait(driver, 10)
+
             try:
                 # Wait for article content or main content to be visible
                 article = wait.until(
