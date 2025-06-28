@@ -28,7 +28,7 @@ def accept_cookie_if_present(driver, timeout=5):
     def try_accept_in_context(context_desc="main content"):
         try:
             button = WebDriverWait(driver, timeout).until(
-                EC.presence_of_element_located((By.NAME, "agree"))
+                EC.presence_of_element_located((By.XPATH, xpath))
             )
             driver.execute_script("arguments[0].click();", button)
             print(f"✅ Cookie accepted in {context_desc}")
