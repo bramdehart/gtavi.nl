@@ -34,7 +34,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        playwright install --with-deps
+        playwright install
     - name: Generate and Save Articles
       id: generate_articles
       env:
