@@ -5,17 +5,55 @@ import os
 import random
 import re
 import requests
+import time
 from bs4 import BeautifulSoup
 from datetime import datetime
 from numpy import dot
 from numpy.linalg import norm
-from pathlib import Path
 from openai import OpenAI
+from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+
+def accept_cookie_if_present(driver, timeout=5):
+    xpath = (
+        "//button[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'accept') or "
+        "contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'akkoord') or "
+        "contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'agree')]"
+    )
+
+    def try_accept_in_context(context_desc="main content"):
+        try:
+            button = WebDriverWait(driver, timeout).until(
+                EC.presence_of_element_located((By.NAME, "agree"))
+            )
+            driver.execute_script("arguments[0].click();", button)
+            print(f"✅ Cookie accepted in {context_desc}")
+            return True
+        except TimeoutException:
+            print(f"ℹ️ No cookie button found in {context_desc}")
+            return False
+
+    # Check iframes
+    iframes = driver.find_elements(By.TAG_NAME, "iframe")
+    print(f"🔍 Found {len(iframes)} iframe(s)")
+
+    for index, frame in enumerate(iframes):
+        try:
+            driver.switch_to.frame(frame)
+            if try_accept_in_context(f"iframe {index}"):
+                driver.switch_to.default_content()
+                return True
+        except Exception as e:
+            print(f"⚠️ Error accessing iframe {index}: {e}")
+        finally:
+            driver.switch_to.default_content()
+
+    # If not in any iframe, try main page
+    return try_accept_in_context("main page")
 
 def fix_image_paths(markdown: str) -> str:
     return markdown.replace("(assets/images/1200", "(/assets/images/1200")
@@ -263,13 +301,14 @@ def extract_text_from_url(url: str) -> str:
     try:
         # Configure Chrome options
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument('--headless')  # Run in headless mode
+        chrome_options.add_argument('--headless') # Run in headless mode
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
         chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument('--window-size=1920,1080')
         chrome_options.add_argument('--ignore-certificate-errors')
         chrome_options.add_argument('--disable-blink-features=AutomationControlled')
+        chrome_options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36')
         
         # Start Chrome driver using GitHub Actions environment
         driver = webdriver.Chrome(
@@ -286,29 +325,22 @@ def extract_text_from_url(url: str) -> str:
                     EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Accept all') or contains(., 'Akkoord') or contains(., 'Accept')]"))
                 )
                 accept_btn.click()
-                logger.debug("✅ Google cookie wall accepted")
+                logger.info("✅ Google cookie wall accepted")
             except Exception:
-                logger.debug("ℹ️ No Google cookie wall or button not found")
+                logger.info("ℹ️ No Google cookie wall or button not found")
             
-            # Wait for the article content to load (adjust timeout as needed)
-            wait = WebDriverWait(driver, 10)
-
-            try:
-                # Click on the "Accept all" button if it's visible (Article cookie blocker)
-                accept_btn = WebDriverWait(driver, 3).until(
-                    EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Accept all') or contains(., 'Akkoord') or contains(., 'Accept')]"))
-                )
-                accept_btn.click()
-                logger.debug("✅ Article cookie wall accepted")
-            except Exception:
-                logger.debug("ℹ️ No Article cookie wall or button not found")
-
-            # Wait for the article content to load (adjust timeout as needed)
-            wait = WebDriverWait(driver, 10)
+            # Wait for the article page to load after Google cookie banner agreement
+            time.sleep(10)
+            # Agree to cookie banners on the article page
+            accept_cookie_if_present(driver, 5)
+            # Wait for the article page to load after article cookie banner agreement
+            logger.info('Wait for the article page to load after article cookie banner agreement')
+            time.sleep(10)
+            logger.info('Done waiting 10 seconds')
 
             try:
                 # Wait for article content or main content to be visible
-                article = wait.until(
+                article = wait = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, 'article, .article, .content'))
                 )
             except TimeoutException:
@@ -383,10 +415,10 @@ if __name__ == "__main__":
                 continue
 
             # Save unique article and continue
-            logger.info(f"Found unique article {articles_processed}/{article_count}")
             save_article_and_embedding(article)
             generated_articles.append(article)
             articles_processed += 1
+            logger.info(f"Found unique article {articles_processed}/{article_count}")
         else:
             logger.info(f"Skipping article: {news_item['title']}")
     
