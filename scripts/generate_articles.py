@@ -223,8 +223,8 @@ def fetch_latest_gta_news():
     rss_url = "https://news.google.com/rss/search?q=GTA+6&hl=en&gl=US&ceid=US:en"
     
     # Disable verify on local machine. Always enable on production.
-    feed = requests.get(rss_url, headers={"User-Agent": "Mozilla/5.0"}, verify=False) 
-    # feed = requests.get(rss_url, headers={"User-Agent": "Mozilla/5.0"}, verify=True)
+    # feed = requests.get(rss_url, headers={"User-Agent": "Mozilla/5.0"}, verify=False) 
+    feed = requests.get(rss_url, headers={"User-Agent": "Mozilla/5.0"}, verify=True)
     feed = feedparser.parse(feed.text)
 
     sorted_items = sorted(
