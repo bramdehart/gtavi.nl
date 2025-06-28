@@ -60,9 +60,14 @@ def extract_text_from_url(url: str) -> str:
         browser.close()
         return text.strip() 
 
+def extract_date_only(markdown: str) -> str:
+    match = re.search(r'^date:\s+(\d{4}-\d{2}-\d{2})', markdown, re.MULTILINE)
+    if match:
+        return match.group(1)
+    return None
 
 def fix_image_paths(markdown: str) -> str:
-    return markdown.replace("(assets/images/1200", "(/assets/images/1200")
+    return markdown.replace("(assets/img/1200", "(/assets/img/1200")
 
 
 def strip_markdown_code_fence(md: str) -> str:
@@ -77,9 +82,9 @@ def strip_markdown_code_fence(md: str) -> str:
 
 
 def slug_from_markdown(markdown: str) -> str:
-    lines = markdown.splitlines()
+    lines = markdown.strip().splitlines()
     for line in lines:
-        match = re.match(r'^#+\s+(.*)', line)
+        match = re.match(r'^title:\s+(.*)', line, re.IGNORECASE)
         if match:
             header = match.group(1).strip()
             break
@@ -87,8 +92,11 @@ def slug_from_markdown(markdown: str) -> str:
         raise ValueError("No header found in markdown")
 
     slug = header.lower()
-    slug = re.sub(r'\s+', '_', slug)
+    slug = re.sub(r'\s+', '-', slug)
     slug = re.sub(r'[^\w\-]', '', slug)
+    extracted_date = extract_date_only(markdown)
+    if (extracted_date):
+        return extracted_date + '-' + slug
     return slug
 
 
@@ -141,9 +149,9 @@ def generate_article(source_url: str, publication_date: str, generated_articles:
     client = OpenAI(api_key=api_key)
     embeddings_client = OpenAI(api_key=api_key)
 
-    images_dir = Path("assets/images/1200")
+    images_dir = Path("assets/img/1200")
     image_files = [f for f in images_dir.glob("*.jpg") if f.is_file()]
-    image_url = f"/assets/images/1200/{random.choice(image_files).name}" if image_files else None
+    image_url = f"/assets/img/1200/{random.choice(image_files).name}" if image_files else None
 
     input_text = extract_text_from_url(source_url)
 
@@ -159,8 +167,10 @@ def generate_article(source_url: str, publication_date: str, generated_articles:
         "Schrijf een uniek, herschreven artikel in het Nederlands op basis van onderstaand nieuws. "
         "Zorg voor een pakkende intro, een duidelijke structuur en een toegankelijke schrijfstijl.\n\n"
         "Het artikel moet worden opgemaakt in markdown-formaat, geschikt voor gebruik in een Jekyll-blog.\n\n"
-        "Zorgt ervoor dat de markdown een header kop bevat met de onderdelen title, date, categories en tags zoals verwacht in een Jekyll post."
-        "Gebruik voor date het formaat: yyyy-mm-dd hh:mm:ss -200, met als waarde: {publication_date})\n"
+        "Zorgt ervoor dat de markdown een header kop bevat met de onderdelen title, date, categories tags en image.path zoals verwacht in een Jekyll post."
+        "Plaats de titel altijd binnen quotes (\") om corrupte markdown te voorkomen"
+        f"De waarde van image.path is {image_url}. Zorg dat het pad altijd begint met een `/`"
+        f"Gebruik voor date het formaat: yyyy-mm-dd hh:mm:ss +200, met als waarde: {publication_date})\n"
         "Kies één of meerdere categorieën uit deze lijst:\n"
         "Nieuws, Geruchten, Leaks, Gameplay, Verhaal, Locatie, Personages, Voertuigen, Multiplayer, Techniek, "
         "Release, PlayStation, Xbox, PC, \"Rockstar Games\".\n\n"
@@ -170,10 +180,17 @@ def generate_article(source_url: str, publication_date: str, generated_articles:
         "Let op:\n"
         "- Noteer categorieën en tags als geldige YAML-arrays met vierkante haken ([])\n"
         "- Gebruik aanhalingstekens (\"\") rond elk item met een spatie, bijvoorbeeld \"gta 6\"\n\n"
+        "De header ziet er bijvoorbeeld zo uit:\n"
+        "---"
+        "title: Vice City Voltage – De Elektrische Ford Capri en de Verwachtingen voor GTA 6"
+        "date: 2025-06-28 18:49:50 +200"
+        "categories: [\"Nieuws\", \"Rockstar Games\", \"Locatie\"]"
+        "tags: [\"vice city\", \"rockstar games\", \"ps5\", \"xbox series x\"]"
+        "image:"
+        "   path: /assets/img/1200/Vice_City_01.jpg"
+        "---"
         "Vervolgens vul je de markdown met je eigen geschreven artikel."
-        "Begin het artikel altijd met een header (#)."
-        "Beperk het artikel tot één afbeelding. Gebruik nooit externe afbeeldingen.\n"
-        f"Gebruik de volgende afbeelding-URL: {image_url} (zorg dat deze begint met een enkele `/`).\n\n"
+        "Gebruik geen afbeeldingen in het artikel, enkel in de header.\n"
         "Gebruik de onderstaande tekst als bron voor het herschreven artikel:\n"
         f"{input_text}"
     )
