@@ -232,7 +232,8 @@ def fetch_latest_gta_news():
     for entry in sorted(feed.entries, key=lambda e: datetime(*e.published_parsed[:6]), reverse=True):
         if hasattr(entry, "link") and hasattr(entry, "published"):
             if hasattr(entry, "source") and hasattr(entry.source, "href"):
-                if entry.source.href in ["https://www.gamekings.tv", "https://metro.co.uk", "https://timesofindia.indiatimes.com"]:
+                # These articles are either too personal, making them difficult to generalize, or they use infinite scrolling, which leads to excessively large page content that causes errors when sending the request to OpenAI.
+                if entry.source.href in ["https://www.gamekings.tv", "https://metro.co.uk", "https://timesofindia.indiatimes.com", "https://www.rudebaguette.com"]:
                     continue
             news_items.append({
                 "title": entry.title,
