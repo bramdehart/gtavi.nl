@@ -321,7 +321,7 @@ def extract_text_from_url(url: str) -> str:
 
             try:
                 # Click on the "Accept all" button if it's visible (Google cookie blocker)
-                accept_btn = WebDriverWait(driver, 3).until(
+                accept_btn = WebDriverWait(driver, 10).until(
                     EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Accept all') or contains(., 'Akkoord') or contains(., 'Accept')]"))
                 )
                 accept_btn.click()
