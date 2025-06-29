@@ -163,6 +163,10 @@
 
     {% if page.layout == 'home' %}
       <!-- create the image wrapper -->
+      {% if _class contains 'no-preview-img' %}
+        {% assign _img_content = _img_content | append: IMG_TAG | append: _left | append: _right %}
+        {% continue %}
+      {% endif %}
       {% assign _wrapper_start = '<div class="preview-img ' | append: _class | append: '">' %}
 
       {% assign _img_content = _img_content | append: _wrapper_start %}

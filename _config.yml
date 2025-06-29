@@ -171,6 +171,9 @@ collections:
   tabs:
     output: true
     sort_by: order
+  pages:
+    output: true
+    permalink: /:name/
 
 defaults:
   - scope:
@@ -228,3 +231,6 @@ jekyll-archives:
   title: ":name"
 include:
   - assets/js/dist
+
+plugins:
+  - jekyll-redirect-from
