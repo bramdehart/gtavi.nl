@@ -1,6 +1,7 @@
 ---
 layout: page
-title: GTA 6 kopen
+title: Pre-order GTA 6
+icon: fas fa-cart-shopping
 permalink: /gta-6-kopen/
 ---
 🕒 **Nog even geduld...**  
@@ -10,6 +11,17 @@ We houden de officiële kanalen en grote retailers zoals Bol.com, Coolblue en Am
 
 ![GTA 6 Boxart voor PS5 en Xbox Series X](/assets/img/gta-6-boxart.jpg){: style="max-width: 600px; border-radius: 10px;" }
 *Voorlopige boxart van GTA VI voor PlayStation 5 en Xbox Series X – definitieve cover kan afwijken.*
+
+---
+
+## Waarom jij straks hier GTA 6 moet pre-orderen
+
+Zodra de pre-orders live gaan, kun je op deze pagina terecht voor:
+
+- 📦 Beschikbare edities (Standaard, Deluxe, Collector's)
+- 🛒 Links naar betrouwbare winkels
+- 💰 Prijsvergelijkingen per platform
+- 🕐 Eventuele pre-order bonussen
 
 ---
 
@@ -26,17 +38,6 @@ Rockstar zou werken aan geavanceerdere physics, verbeterde AI voor NPC's, en mee
 
 🕹️ **Exclusief voor next-gen consoles (en PC)**  
 GTA VI zal naar verwachting alleen verschijnen voor de nieuwste generatie consoles (PS5 en Xbox Series X/S), en mogelijk later voor PC. Een release voor PS4 of Xbox One lijkt uitgesloten.
-
----
-
-## Waarom jij straks hier GTA 6 moet pre-orderen
-
-Zodra de pre-orders live gaan, kun je op deze pagina terecht voor:
-
-- 📦 Beschikbare edities (Standaard, Deluxe, Collector's)
-- 🛒 Links naar betrouwbare winkels
-- 💰 Prijsvergelijkingen per platform
-- 🕐 Eventuele pre-order bonussen
 
 ---
 
