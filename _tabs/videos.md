@@ -1,8 +1,9 @@
 ---
 layout: page
-title: GTA 6 Trailers
+title: GTA 6 trailers
 icon: fas fa-video
 permalink: /gta-6-videos/
+order: 2
 ---
 Bekijk hieronder de officiële trailers van Grand Theft Auto VI. Rockstar Games heeft inmiddels twee trailers uitgebracht die een eerste blik geven op Vice City, hoofdpersonages Lucia en Jason, en de sfeer van het spel.
 

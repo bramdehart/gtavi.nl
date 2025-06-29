@@ -1,7 +1,8 @@
 ---
 # the default layout is 'page'
 icon: fas fa-info-circle
-order: 4
+order: 6
+title: Over deze site
 ---
 GTAVI.nl is jouw dagelijkse bron voor het laatste nieuws, geruchten, trailers en gameplay-updates over **Grand Theft Auto VI**.
 

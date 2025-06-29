@@ -1,8 +1,9 @@
 ---
 layout: page
-title: Pre-order GTA 6
+title: GTA 6 pre-orderen
 icon: fas fa-cart-shopping
 permalink: /gta-6-kopen/
+order: 1
 ---
 🕒 **Nog even geduld...**  
 Het is op dit moment nog niet mogelijk om GTA VI te pre-orderen.
